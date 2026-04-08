@@ -72,7 +72,7 @@ class TaskController extends Controller
         ];
 
         if ($request->input('name') === 'due_date') {
-            $rules['value'] = 'nullable|date';
+            $rules['value'] = 'nullable|date|after_or_equal:today';
         }
 
         $validated = $request->validate($rules);

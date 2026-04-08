@@ -1,4 +1,10 @@
 <x-tadieu-layout>
+
+    @section('styles')
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+    
+    @endsection
+
     @section('content')
     <div class="card w-full">
         <a href="{{ route('tasks.create') }}" class="btn">Add New</a>
@@ -77,5 +83,53 @@
     </style>
     @endif
 
+    @endsection
+
+    @section('scripts')
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/locale/en-in.min.js"></script>
+    <script>
+        const initEditable = () => {
+        var taskStatus = $('#task-list').data('status') || '';
+
+        $.fn.editable.defaults.mode = 'inline';
+        $.fn.editable.defaults.ajaxOptions = { type: 'POST' };
+        $.fn.editable.defaults.params = function(params) {
+            params.status = taskStatus;
+            return params;
+        };
+
+        
+        $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm">Save</button>' +
+            '<button type="button" class="btn btn-secondary btn-sm editable-cancel">Cancel</button>';
+        $('.editable-field').editable({
+            ajaxOptions: {
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            },
+            success: function(response, newValue) {
+                if (this.dataset.name === 'due_date') {
+                    window.location.reload();
+                }
+            },
+            error: function(response, newValue) {
+                if(response.status === 422) {
+                    console.log(response);
+                    alert(response.responseJSON.message);
+                } else {
+                    return response.responseText;
+                }
+            }
+        });
+    };
+
+    $(function() {
+        initEditable();
+    });
+    </script>
     @endsection
 </x-tadieu-layout>
