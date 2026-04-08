@@ -134,6 +134,19 @@
             $error.text(message);
         }
 
+        function reloadTaskList() {
+            var statusParam = currentFilter ? '?status=' + encodeURIComponent(currentFilter) : '';
+            var requestUrl = '{{ route("tasks.index") }}' + statusParam;
+
+            return $.ajax({
+                url: requestUrl,
+                method: 'GET',
+                dataType: 'json',
+            }).done(function(response) {
+                $('#task-list').html(response.html);
+            });
+        }
+
         $('body').on('click', '.task-edit-button', function() {
             var $button = $(this);
             var $row = $button.closest('li');
@@ -213,7 +226,7 @@
                 }
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
-                if (parsed <= today) {
+                if (parsed < today) {
                     displayFieldError($form.find('[name=due_date]'), 'Due date must be in the future.');
                     return;
                 }
@@ -224,22 +237,7 @@
                 method: 'POST',
                 data: $form.serialize(),
                 success: function(response) {
-                    $row.data('task-description', description);
-                    $row.data('task-due-date', dueDate);
-
-                    var dueText = dueDate ? new Date(dueDate).toLocaleDateString('en-CA')
-                        .split('-').reverse().join('-') : 'No due date';
-                    var descriptionHtml = '<div class="text-sm font-medium leading-none">' +
-                        escapeHtml(description) + '</div>';
-                    var dueHtml = '<div class="text-sm font-muted leading-none">' +
-                        escapeHtml(dueText) + '</div>';
-
-                    $view.html(descriptionHtml + dueHtml);
-                    $row.find('.task-edit-button').show();
-
-                    if (currentFilter === 'overdue' && !isOverdue(dueDate)) {
-                        $row.remove();
-                    }
+                    reloadTaskList();
                 },
                 error: function(xhr) {
                     var message = 'Unable to save changes.';

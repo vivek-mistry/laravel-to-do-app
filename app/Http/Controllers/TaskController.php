@@ -18,7 +18,7 @@ class TaskController extends Controller
         $this->taskService = $taskService;
     }
 
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         $status = $request->query('status');
 
@@ -27,6 +27,15 @@ class TaskController extends Controller
                 'status' => $status,
             ]
         );
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('tasks.items', [
+                    'tasks' => $tasks,
+                    'status' => $status,
+                ])->render(),
+            ]);
+        }
 
         return view('tasks.index', [
             'tasks' => $tasks,
