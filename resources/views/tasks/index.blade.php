@@ -25,10 +25,11 @@
                                 <p class="text-sm font-muted leading-none {{ $task->done ? 'line-through' : '' }}">{{ $task->due_date->format('d-m-Y') }}</p>
                             @endif
                         </div>
-
+                        
                         @if (!$task->done)
-                            <form action="{{ route('tasks.markDone', $task) }}" method="PATCH" class="form">
+                            <form action="{{ route('tasks.markDone', $task) }}" method="POST" class="form">
                                 @csrf
+                                @method('PATCH')
                                 <button type="submit" class="btn-sm-outline">Done</button>
                             </form>
                         @endif
