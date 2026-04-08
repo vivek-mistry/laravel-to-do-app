@@ -1,22 +1,7 @@
 <x-tadieu-layout>
     @section('content')
     <div class="card w-full">
-        <section>
-            <form class="form grid gap-6">
-                <div class="grid gap-2">
-                    <label for="task_description">Description</label>
-                    <div class="grid grid-cols-[1fr_180px] gap-2">
-                        <input type="text" id="task_description" name="description" placeholder="describe the task..." tabindex="1" autofocus>
-                        <button type="submit" class="btn" tabindex="3">Add</button>
-                    </div>
-                </div>
-
-                <div class="grid gap-2">
-                    <label for="task_due_date">Due date</label>
-                    <input type="date" id="task_due_date" name="due_date" tabindex="2">
-                </div>
-            </form>
-        </section>
+        <a href="{{ route('tasks.create') }}" class="btn">Add New</a>
 
         <hr>
 
@@ -32,50 +17,28 @@
             </form>
 
             <ul class="grid gap-4">
-                <li class="flex items-center gap-4">
-                    <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none">Upgrade memory of database server</p>
-                        <p class="text-sm font-muted leading-none">03-09-2025</p>
-                    </div>
+                @forelse ($tasks as $task)
+                    <li class="flex items-center gap-4">
+                        <div class="flex flex-col gap-1 mr-auto">
+                            <p class="text-sm font-medium leading-none {{ $task->done ? 'line-through' : '' }}">{{ $task->description }}</p>
+                            @if ($task->due_date)
+                                <p class="text-sm font-muted leading-none {{ $task->done ? 'line-through' : '' }}">{{ $task->due_date->format('d-m-Y') }}</p>
+                            @endif
+                        </div>
 
-                    <form class="form">
-                        <button type="submit" class="btn-sm-outline">Done</button>
-                    </form>
-                </li>
+                        @if (!$task->done)
+                            <form action="{{ route('tasks.markDone', $task) }}" method="PATCH" class="form">
+                                @csrf
+                                <button type="submit" class="btn-sm-outline">Done</button>
+                            </form>
+                        @endif
+                    </li>
+                @empty
+                    <li class="flex items-center gap-4">
+                        <p class="text-sm font-medium leading-none">No tasks found.</p>
+                    </li>
+                @endforelse
 
-                <li class="flex items-center gap-4">
-                    <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none">Upgrade web servers to PHP8.4</p>
-                        <p class="text-sm font-muted leading-none">05-09-2025</p>
-                    </div>
-
-                    <form class="form">
-                        <button type="submit" class="btn-sm-outline">Done</button>
-                    </form>
-                </li>
-
-                <li class="flex items-center gap-4">
-                    <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none">Review Jira ticket IND-215</p>
-                    </div>
-
-                    <form class="form">
-                        <button type="submit" class="btn-sm-outline">Done</button>
-                    </form>
-                </li>
-
-                <li class="flex items-center gap-4">
-                    <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none line-through">Review Jira ticket IND-207</p>
-                        <p class="text-sm font-muted leading-none line-through">02-09-2025</p>
-                    </div>
-                </li>
-
-                <li class="flex items-center gap-4">
-                    <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none line-through">Implement IND-209</p>
-                    </div>
-                </li>
             </ul>
         </section>
     </div>
