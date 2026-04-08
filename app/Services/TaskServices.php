@@ -10,19 +10,19 @@ class TaskServices
     {
         $query = Task::query();
 
-        $query->when(isset($filters['status']) && $filters['status'] === 'open', function ($query) use ($filters) {
+        $query->when(isset($filters['status']) && $filters['status'] === 'open', function ($query) {
             $query->where('done', false);
         });
 
-        $query->when(isset($filters['status']) && $filters['status'] === 'overdue', function ($query) use ($filters) {
+        $query->when(isset($filters['status']) && $filters['status'] === 'overdue', function ($query) {
             $query->where('due_date', '<', now())
-                  ->where('done', false);
+                ->where('done', false);
         });
 
         $query->orderBy('done')
-              ->orderByRaw('due_date IS NULL')
-              ->orderBy('due_date')
-              ->orderByDesc('created_at');
+            ->orderByRaw('due_date IS NULL')
+            ->orderBy('due_date')
+            ->orderByDesc('created_at');
 
         return $query->get();
     }

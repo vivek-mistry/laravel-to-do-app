@@ -36,20 +36,14 @@ class TaskController extends Controller
 
     /**
      * Load View
-     *
-     * @return View
      */
     public function create(): View
     {
         return view('tasks.create');
     }
 
-
     /**
      * Task Store
-     *
-     * @param TaskStoreRequest $request
-     * @return RedirectResponse
      */
     public function store(TaskStoreRequest $request): RedirectResponse
     {
