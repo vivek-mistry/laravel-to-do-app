@@ -15,7 +15,7 @@ class TaskServices
         });
 
         $query->when(isset($filters['status']) && $filters['status'] === 'overdue', function ($query) {
-            $query->where('due_date', '<', now())
+            $query->where('due_date', '<', now()->format('Y-m-d'))
                 ->where('done', false);
         });
 
