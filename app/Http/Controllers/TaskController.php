@@ -14,12 +14,11 @@ class TaskController extends Controller
 
     public function __construct(
         \App\Services\TaskServices $taskService
-    )
-    {
+    ) {
         $this->taskService = $taskService;
     }
 
-    public function index(Request $request) : View
+    public function index(Request $request): View
     {
         $tasks = $this->taskService->getAllTasks(
             filters: [
@@ -37,7 +36,7 @@ class TaskController extends Controller
      *
      * @return View
      */
-    public function create() : View
+    public function create(): View
     {
         return view('tasks.create');
     }
@@ -49,17 +48,19 @@ class TaskController extends Controller
      * @param TaskStoreRequest $request
      * @return RedirectResponse
      */
-    public function store(TaskStoreRequest $request) : RedirectResponse
+    public function store(TaskStoreRequest $request): RedirectResponse
     {
-        Task::create([
+        $task = Task::create([
             'description' => $request->description,
             'due_date' => $request->due_date,
         ]);
 
-        return redirect()->route('tasks.index')->with('success', 'Task created successfully!');
+        return redirect()->route('tasks.index')
+            ->with('success', 'Task created successfully!')
+            ->with('highlighted_task', $task->id);
     }
 
-    public function markAsDone(Task $task) : RedirectResponse
+    public function markAsDone(Task $task): RedirectResponse
     {
         $task->update(['done' => true]);
 
