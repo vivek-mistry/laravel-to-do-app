@@ -23,7 +23,7 @@ class TaskStoreRequest extends FormRequest
     {
         return [
             'description' => 'required|max:255',
-            'due_date' => 'nullable|date',
+            'due_date' => ['nullable', 'date', 'after_or_equal:today'],
         ];
     }
 }
