@@ -6,12 +6,12 @@
         <hr>
 
         <section>
-            <form class="form flex gap-2 mb-6">
+            <form action="{{ route('tasks.index') }}" method="GET" class="form flex gap-2 mb-6">
                 <label for="filter_status">Filter tasks</label>
                 <select id="filter_status" name="status">
-                    <option value="">All</option>
-                    <option value="open">Open</option>
-                    <option value="overdue">Overdue</option>
+                    <option value="" {{ $status === null || $status === '' ? 'selected' : '' }}>All</option>
+                    <option value="open" {{ $status === 'open' ? 'selected' : '' }}>Open</option>
+                    <option value="overdue" {{ $status === 'overdue' ? 'selected' : '' }}>Overdue</option>
                 </select>
                 <button type="submit" class="btn">Filter</button>
             </form>
@@ -35,6 +35,7 @@
                     <form action="{{ route('tasks.markDone', $task) }}" method="POST" class="form">
                         @csrf
                         @method('PATCH')
+                        <input type="hidden" name="status" value="{{ $status }}">
                         <button type="submit" class="btn-sm-outline">Done</button>
                     </form>
                     @endif

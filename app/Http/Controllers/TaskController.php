@@ -20,14 +20,17 @@ class TaskController extends Controller
 
     public function index(Request $request): View
     {
+        $status = $request->query('status');
+
         $tasks = $this->taskService->getAllTasks(
             filters: [
-                'status' => $request->query('status'),
+                'status' => $status,
             ]
         );
 
         return view('tasks.index', [
             'tasks' => $tasks,
+            'status' => $status,
         ]);
     }
 
@@ -60,10 +63,13 @@ class TaskController extends Controller
             ->with('highlighted_task', $task->id);
     }
 
-    public function markAsDone(Task $task): RedirectResponse
+    public function markAsDone(Request $request, Task $task): RedirectResponse
     {
         $task->update(['done' => true]);
 
-        return redirect()->route('tasks.index')->with('success', 'Task marked as done!');
+        return redirect()->route('tasks.index', [
+            'status' => $request->input('status'),
+        ])
+            ->with('success', 'Task marked as done!');
     }
 }
