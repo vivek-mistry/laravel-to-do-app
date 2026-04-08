@@ -58,7 +58,7 @@
             <form action="{{ route('tasks.index') }}" method="GET" class="form flex gap-2 mb-6">
                 <label for="filter_status">Filter tasks</label>
                 <select id="filter_status" name="status">
-                    <option value="" {{ $status === null || $status === '' ? 'selected' : '' }}>All</option>
+                    <option value="all" {{ $status === 'all' || $status === 'all' ? 'selected' : '' }}>All</option>
                     <option value="open" {{ $status === 'open' ? 'selected' : '' }}>Open</option>
                     <option value="overdue" {{ $status === 'overdue' ? 'selected' : '' }}>Overdue</option>
                 </select>
