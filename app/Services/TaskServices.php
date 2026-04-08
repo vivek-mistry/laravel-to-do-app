@@ -19,6 +19,11 @@ class TaskServices
                   ->where('done', false);
         });
 
+        $query->orderBy('done')
+              ->orderByRaw('due_date IS NULL')
+              ->orderBy('due_date')
+              ->orderByDesc('created_at');
+
         return $query->get();
     }
 }
