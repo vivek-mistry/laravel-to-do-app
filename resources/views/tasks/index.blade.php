@@ -16,19 +16,26 @@
                 <button type="submit" class="btn">Filter</button>
             </form>
 
-            <ul class="grid gap-4">
+            <ul id="task-list" class="grid gap-4" data-status="{{ $status }}">
                 @forelse ($tasks as $task)
-                <li
-                    class="flex items-center gap-4 {{ session('highlighted_task') == $task->id ? 'highlighted-task bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300' : '' }}">
+                <li class="flex items-center gap-4 {{ session('highlighted_task') == $task->id ? 'highlighted-task bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300' : '' }}"
+                    data-task-id="{{ $task->id }}">
                     <div class="flex flex-col gap-1 mr-auto">
-                        <p class="text-sm font-medium leading-none {{ $task->done ? 'line-through' : '' }}">
+                        <a href="#"
+                            class="editable-field text-sm font-medium leading-none {{ $task->done ? 'line-through' : '' }}"
+                            data-name="description" data-url="{{ route('tasks.inlineUpdate', $task) }}"
+                            data-pk="{{ $task->id }}" data-type="text" data-title="Edit description"
+                            data-value="{{ $task->description }}">
                             {{ $task->description }}
-                        </p>
-                        @if ($task->due_date)
-                        <p class="text-sm font-muted leading-none {{ $task->done ? 'line-through' : '' }}">
-                            {{ $task->due_date->format('d-m-Y') }}
-                        </p>
-                        @endif
+                        </a>
+                        <a href="#"
+                            class="editable-field text-sm font-muted leading-none {{ $task->done ? 'line-through' : '' }}"
+                            data-name="due_date" data-url="{{ route('tasks.inlineUpdate', $task) }}"
+                            data-pk="{{ $task->id }}" data-type="text" data-title="Edit due date (YYYY-MM-DD)"
+                            data-value="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
+                            data-placeholder="YYYY-MM-DD">
+                            {{ $task->due_date ? $task->due_date->format('d-m-Y') : 'No due date' }}
+                        </a>
                     </div>
 
                     @if (!$task->done)

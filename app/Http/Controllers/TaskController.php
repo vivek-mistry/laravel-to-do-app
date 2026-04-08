@@ -63,6 +63,42 @@ class TaskController extends Controller
             ->with('highlighted_task', $task->id);
     }
 
+    public function inlineUpdate(Request $request, Task $task)
+    {
+        $rules = [
+            'name' => 'required|in:description,due_date',
+            'value' => 'nullable|string|max:255',
+            'status' => 'nullable|in:open,overdue',
+        ];
+
+        if ($request->input('name') === 'due_date') {
+            $rules['value'] = 'nullable|date';
+        }
+
+        $validated = $request->validate($rules);
+
+        $update = [];
+
+        if ($validated['name'] === 'description') {
+            $update['description'] = $validated['value'];
+        }
+
+        if ($validated['name'] === 'due_date') {
+            $update['due_date'] = $validated['value'] ?: null;
+        }
+
+        $task->update($update);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
+
+        return redirect()->route('tasks.index', [
+            'status' => $validated['status'] ?? null,
+        ])
+            ->with('success', 'Task updated successfully!');
+    }
+
     public function markAsDone(Request $request, Task $task): RedirectResponse
     {
         $task->update(['done' => true]);
