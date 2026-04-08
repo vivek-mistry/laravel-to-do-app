@@ -1,13 +1,55 @@
 <x-tadieu-layout>
 
     @section('styles')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
     
+    @if (session('highlighted_task'))
+    <style>
+    .highlighted-task {
+        animation: highlight-fade 2s ease forwards;
+    }
+
+    @keyframes highlight-fade {
+        from {
+            background-color: rgba(250, 204, 21, 0.35);
+            border-color: rgba(252, 211, 77, 1);
+        }
+
+        to {
+            background-color: transparent;
+            border-color: transparent;
+        }
+    }
+    </style>
+    @endif
     @endsection
 
     @section('content')
     <div class="card w-full">
-        <a href="{{ route('tasks.create') }}" class="btn">Add New</a>
+        <!-- <a href="{{ route('tasks.create') }}" class="btn">Add New</a> -->
+        <section>
+            <form action="{{ route('tasks.store') }}" class="form grid gap-6" method="Post">
+                @method('Post')
+                @csrf
+                <div class="grid gap-2">
+                    <label for="task_description">Description</label>
+                    <div class="grid grid-cols-[1fr_180px] gap-2">
+                        <input type="text" id="task_description" name="description" placeholder="describe the task..." tabindex="1" autofocus value="{{ old('description') }}">
+                        <button type="submit" class="btn" tabindex="3">Add</button>
+                        @error('description')
+                            <p class="text-red-500 text-sm">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid gap-2">
+                    <label for="task_due_date">Due date</label>
+                    <input type="date" id="task_due_date" name="due_date" tabindex="2" value="{{ old('due_date') }}">
+                    @error('due_date')
+                        <p class="text-red-500 text-sm">{{ $message }}</p>
+                    @enderror
+                </div>
+            </form>
+        </section>
 
         <hr>
 
@@ -37,7 +79,7 @@
                         <a href="#"
                             class="editable-field text-sm font-muted leading-none {{ $task->done ? 'line-through' : '' }}"
                             data-name="due_date" data-url="{{ route('tasks.inlineUpdate', $task) }}"
-                            data-pk="{{ $task->id }}" data-type="text" data-title="Edit due date (YYYY-MM-DD)"
+                            data-pk="{{ $task->id }}" data-type="date" data-title="Edit due date (YYYY-MM-DD)"
                             data-value="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
                             data-placeholder="YYYY-MM-DD">
                             {{ $task->due_date ? $task->due_date->format('d-m-Y') : 'No due date' }}
@@ -63,73 +105,12 @@
         </section>
     </div>
 
-    @if (session('highlighted_task'))
-    <style>
-    .highlighted-task {
-        animation: highlight-fade 2s ease forwards;
-    }
-
-    @keyframes highlight-fade {
-        from {
-            background-color: rgba(250, 204, 21, 0.35);
-            border-color: rgba(252, 211, 77, 1);
-        }
-
-        to {
-            background-color: transparent;
-            border-color: transparent;
-        }
-    }
-    </style>
-    @endif
+    
 
     @endsection
 
     @section('scripts')
-    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
-    <script src="https://momentjs.com/downloads/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/locale/en-in.min.js"></script>
     <script>
-        const initEditable = () => {
-        var taskStatus = $('#task-list').data('status') || '';
-
-        $.fn.editable.defaults.mode = 'inline';
-        $.fn.editable.defaults.ajaxOptions = { type: 'POST' };
-        $.fn.editable.defaults.params = function(params) {
-            params.status = taskStatus;
-            return params;
-        };
-
-        
-        $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary btn-sm">Save</button>' +
-            '<button type="button" class="btn btn-secondary btn-sm editable-cancel">Cancel</button>';
-        $('.editable-field').editable({
-            ajaxOptions: {
-                type: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            },
-            success: function(response, newValue) {
-                if (this.dataset.name === 'due_date') {
-                    window.location.reload();
-                }
-            },
-            error: function(response, newValue) {
-                if(response.status === 422) {
-                    console.log(response);
-                    alert(response.responseJSON.message);
-                } else {
-                    return response.responseText;
-                }
-            }
-        });
-    };
-
-    $(function() {
-        initEditable();
-    });
     </script>
     @endsection
 </x-tadieu-layout>
