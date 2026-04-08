@@ -18,8 +18,8 @@
 
             <ul class="grid gap-4">
                 @forelse ($tasks as $task)
-                <li class="flex items-center gap-4 {{ session('highlighted_task') == $task->id ? 'bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 transition-colors duration-1000' : '' }}"
-                    {{ session('highlighted_task') == $task->id ? 'data-highlight-task' : '' }}>
+                <li
+                    class="flex items-center gap-4 {{ session('highlighted_task') == $task->id ? 'highlighted-task bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300' : '' }}">
                     <div class="flex flex-col gap-1 mr-auto">
                         <p class="text-sm font-medium leading-none {{ $task->done ? 'line-through' : '' }}">
                             {{ $task->description }}
@@ -51,22 +51,23 @@
     </div>
 
     @if (session('highlighted_task'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var highlightRow = document.querySelector('[data-highlight-task]');
+    <style>
+    .highlighted-task {
+        animation: highlight-fade 2s ease forwards;
+    }
 
-            if (!highlightRow) {
-                return;
-            }
+    @keyframes highlight-fade {
+        from {
+            background-color: rgba(250, 204, 21, 0.35);
+            border-color: rgba(252, 211, 77, 1);
+        }
 
-            setTimeout(function() {
-                highlightRow.classList.remove('bg-yellow-100');
-                highlightRow.classList.remove('dark:bg-yellow-900/20');
-                highlightRow.classList.remove('border');
-                highlightRow.classList.remove('border-yellow-300');
-            }, 1200);
-        });
-    </script>
+        to {
+            background-color: transparent;
+            border-color: transparent;
+        }
+    }
+    </style>
     @endif
 
     @endsection
