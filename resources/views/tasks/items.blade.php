@@ -1,3 +1,4 @@
+@forelse ($tasks as $task)
 <li class="flex items-center gap-4 {{ session('highlighted_task') == $task->id ? 'highlighted-task bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300' : '' }}"
     data-task-id="{{ $task->id }}" data-task-description="{{ e($task->description) }}"
     data-task-due-date="{{ $task->due_date ? $task->due_date->format('Y-m-d') : '' }}"
@@ -23,3 +24,8 @@
     </div>
     @endif
 </li>
+@empty
+<li class="flex items-center gap-4">
+    <p class="text-sm font-medium leading-none">No tasks found.</p>
+</li>
+@endforelse

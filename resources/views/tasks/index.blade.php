@@ -66,14 +66,7 @@
             </form>
 
             <ul id="task-list" class="grid gap-4" data-status="{{ $status }}">
-                @forelse ($tasks as $task)
-                @include('tasks.item', ['task' => $task, 'status' => $status])
-                @empty
-                <li class="flex items-center gap-4">
-                    <p class="text-sm font-medium leading-none">No tasks found.</p>
-                </li>
-                @endforelse
-
+                @include('tasks.items', ['tasks' => $tasks, 'status' => $status])
             </ul>
         </section>
     </div>
