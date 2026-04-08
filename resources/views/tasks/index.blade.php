@@ -142,10 +142,24 @@
             return date < today;
         }
 
-        function displayError($form, message) {
-            var $error = $form.find('.edit-error');
+        function clearFieldErrors($form) {
+            $form.find('.edit-field-error').text('').hide();
+            $form.find('.edit-form-error').remove();
+        }
+
+        function displayFieldError($input, message) {
+            var $error = $input.closest('label').find('.edit-field-error');
             if (!$error.length) {
-                $error = $('<p class="edit-error text-red-500 text-sm"></p>');
+                $error = $('<p class="edit-field-error text-red-500 text-sm mt-1"></p>');
+                $input.after($error);
+            }
+            $error.text(message).show();
+        }
+
+        function displayFormError($form, message) {
+            var $error = $form.find('.edit-form-error');
+            if (!$error.length) {
+                $error = $('<p class="edit-form-error text-red-500 text-sm mb-2"></p>');
                 $form.prepend($error);
             }
             $error.text(message);
@@ -176,11 +190,13 @@
                 '<span class="text-sm font-medium">Description</span>' +
                 '<input type="text" name="description" class="input w-full" value="' + escapeHtml(
                     description) + '"  maxlength="255">' +
+                '<p class="edit-field-error text-red-500 text-sm mt-1" style="display:none"></p>' +
                 '</label>' +
                 '<label class="flex flex-col gap-1">' +
                 '<span class="text-sm font-medium">Due date</span>' +
                 '<input type="date" name="due_date" class="input w-full" value="' + escapeHtml(
-                dueDate) + '">' +
+                    dueDate) + '">' +
+                '<p class="edit-field-error text-red-500 text-sm mt-1" style="display:none"></p>' +
                 '</label>' +
                 '</div>' +
                 '<div class="flex gap-2">' +
@@ -213,21 +229,23 @@
             var dueDate = $.trim($form.find('[name=due_date]').val());
             var updateUrl = $form.attr('action');
 
+            clearFieldErrors($form);
+
             if (!description) {
-                displayError($form, 'Description is required.');
+                displayFieldError($form.find('[name=description]'), 'Description is required.');
                 return;
             }
 
             if (dueDate) {
                 var parsed = parseDate(dueDate);
                 if (!parsed) {
-                    displayError($form, 'Due date must be a valid date.');
+                    displayFieldError($form.find('[name=due_date]'), 'Due date must be a valid date.');
                     return;
                 }
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
-                if (parsed < today) {
-                    displayError($form, 'Due date cannot be in the past.');
+                if (parsed <= today) {
+                    displayFieldError($form.find('[name=due_date]'), 'Due date must be in the future.');
                     return;
                 }
             }
@@ -259,12 +277,17 @@
                     if (xhr.responseJSON && xhr.responseJSON.errors) {
                         var errors = xhr.responseJSON.errors;
                         if (errors.description) {
-                            message = errors.description[0];
-                        } else if (errors.due_date) {
-                            message = errors.due_date[0];
+                            displayFieldError($form.find('[name=description]'), errors
+                                .description[0]);
+                            return;
+                        }
+                        if (errors.due_date) {
+                            displayFieldError($form.find('[name=due_date]'), errors
+                                .due_date[0]);
+                            return;
                         }
                     }
-                    displayError($form, message);
+                    displayFormError($form, message);
                 }
             });
         });
