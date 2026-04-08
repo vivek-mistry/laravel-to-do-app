@@ -25,7 +25,7 @@
 
     @section('content')
     <div class="card w-full">
-        <!-- <a href="{{ route('tasks.create') }}" class="btn">Add New</a> -->
+        
         <section>
             <form action="{{ route('tasks.store') }}" class="form grid gap-6" method="Post">
                 @method('Post')

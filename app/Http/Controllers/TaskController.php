@@ -34,13 +34,7 @@ class TaskController extends Controller
         ]);
     }
 
-    /**
-     * Load View
-     */
-    public function create(): View
-    {
-        return view('tasks.create');
-    }
+    
 
     /**
      * Task Store
